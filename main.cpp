@@ -4,14 +4,15 @@
 
 struct ClientData {
     int clientId;
+    std::string nickname;
 };
 
-std::string readFile(const std::string &path) {
-    std::ifstream file(path, std::ios::binary);
-    std::ostringstream ss;
-    ss << file.rdbuf();
-    return ss.str();
-}
+// std::string readFile(const std::string &path) {
+//     std::ifstream file(path, std::ios::binary);
+//     std::ostringstream ss;
+//     ss << file.rdbuf();
+//     return ss.str();
+// }
 
 int main() {
     std::vector<uWS::WebSocket<false, true, ClientData>*> clients;
@@ -19,14 +20,14 @@ int main() {
     int clientIndex = 1;
 
     uWS::App()
-    .get("/*", [](auto *res, auto */*req*/) {
-        res->writeHeader("Content-Type", "text/html; charset=utf-8");
-        res->end(readFile("public/index.html"));
-    })
-    .get("/main.js", [](auto *res, auto */*req*/) {
-        res->writeHeader("Content-Type", "application/javascript");
-        res->end(readFile("public/main.js"));
-    })
+    // .get("/*", [](auto *res, auto */*req*/) {
+    //     res->writeHeader("Content-Type", "text/html; charset=utf-8");
+    //     res->end(readFile("public/index.html"));
+    // })
+    // .get("/main.js", [](auto *res, auto */*req*/) {
+    //     res->writeHeader("Content-Type", "application/javascript");
+    //     res->end(readFile("public/main.js"));
+    // })
     .ws<ClientData>("/*", {
         .open = [&clients, &clientIndex](auto *ws) {
             std::cout << "Client connected\n";
