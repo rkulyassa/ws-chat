@@ -42,7 +42,10 @@ function App() {
         setMessages((m) => [...m, { type: "chat", nickname, text }]);
       } else if (opcode === "2") {
         const text = data.slice(0, 100).trim();
-        setMessages((m) => [...m, { type: "chat", nickname: "SERVER", text }]);
+        setMessages((m) => [
+          ...m,
+          { type: "server", nickname: "SERVER", text },
+        ]);
       } else if (opcode === "3") {
         const nickname = data.slice(0, 20).trim();
         setMessages((m) => [...m, { type: "leave", nickname }]);
@@ -84,8 +87,8 @@ function App() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col p-4">
-      <div className="flex-1 space-y-2 overflow-y-auto">
+    <div className="flex min-h-svh flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md flex-1 space-y-2 overflow-y-auto bg-white rounded-md p-4 border border-gray-200">
         {messages.map((msg, i) => {
           if (msg.type === "join") {
             return (
@@ -101,7 +104,7 @@ function App() {
             );
           } else if (msg.type === "server") {
             return (
-              <div key={i} className="text-sm text-red-500">
+              <div key={i} className="text-sm text-gray-400">
                 <span className="font-bold">SERVER</span>: {msg.text}
               </div>
             );
@@ -114,7 +117,7 @@ function App() {
           }
         })}
       </div>
-      <form onSubmit={send} className="mt-4 flex gap-2">
+      <form onSubmit={send} className="w-full max-w-md mt-2 flex gap-2">
         <Input
           placeholder="Message"
           value={input}

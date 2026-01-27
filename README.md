@@ -2,13 +2,15 @@
 
 ## TODO
 - [x] Custom nicknames
-- [ ] Client leave messages
+- [x] Client leave messages
 - [x] Nickname in message UX
+- [x] Fix segfault when last client disconnects
 - [ ] Message timestamps
-- [ ] Startup message
+- [x] Startup message
 - [ ] Connected users list
-- [ ] More compact chat area
-- [ ] Chat history per server lifetime
+- [x] More compact chat area
+- [ ] Remaining characters in input field
+- [x] Chat history per server lifetime
 - [ ] Bishy emotes
 - [ ] Color names
 - [ ] Pending message state UX
