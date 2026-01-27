@@ -9,6 +9,7 @@ const WS_URL = `ws://${host}:3000`;
 
 interface ChatMessage {
   type: "join" | "leave" | "chat" | "server";
+  timestamp: Date;
   nickname: string;
   text?: string;
 }
@@ -25,30 +26,33 @@ function App() {
     if (!name) return;
 
     const ws = new WebSocket(WS_URL);
+    ws.binaryType = "arraybuffer";
     ws.onopen = () => {
       setConnected(true);
       ws.send(`0${name}`);
     };
     ws.onmessage = (e) => {
       const opcode = e.data[0];
-      const data = e.data.slice(1);
+      const timestamp = new Date(0);
+      timestamp.setUTCSeconds(+e.data.slice(1, 11));
+      const data = e.data.slice(11);
 
       if (opcode === "0") {
         const nickname = data.slice(0, 20).trim();
-        setMessages((m) => [...m, { type: "join", nickname }]);
+        setMessages((m) => [...m, { type: "join", timestamp, nickname }]);
       } else if (opcode === "1") {
         const nickname = data.slice(0, 20).trim();
         const text = data.slice(20, 100).trim();
-        setMessages((m) => [...m, { type: "chat", nickname, text }]);
+        setMessages((m) => [...m, { type: "chat", timestamp, nickname, text }]);
       } else if (opcode === "2") {
         const text = data.slice(0, 100).trim();
         setMessages((m) => [
           ...m,
-          { type: "server", nickname: "SERVER", text },
+          { type: "server", timestamp, nickname: "SERVER", text },
         ]);
       } else if (opcode === "3") {
         const nickname = data.slice(0, 20).trim();
-        setMessages((m) => [...m, { type: "leave", nickname }]);
+        setMessages((m) => [...m, { type: "leave", timestamp, nickname }]);
       }
     };
     wsRef.current = ws;
@@ -89,29 +93,46 @@ function App() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-4">
       <div className="w-full max-w-md flex-1 space-y-2 overflow-y-auto bg-white rounded-md p-4 border border-gray-200">
-        {messages.map((msg, i) => {
-          if (msg.type === "join") {
+        {messages.map((message, i) => {
+          const timestampEl = (
+            <span
+              className="text-xs text-gray-300 float-right font-mono"
+              // style={{ fontFamily: '"Courier New", Courier, monospace' }}
+            >
+              {message.timestamp.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          );
+
+          if (message.type === "join") {
             return (
-              <div key={i} className="text-sm text-green-500">
-                <span className="font-bold">{msg.nickname}</span> joined
+              <div key={i} className="text-sm text-green-500 clearfix">
+                <span className="font-bold">{message.nickname}</span> joined
+                {timestampEl}
               </div>
             );
-          } else if (msg.type === "chat") {
+          } else if (message.type === "chat") {
             return (
-              <div key={i} className="text-sm text-gray-700">
-                <span className="font-bold">{msg.nickname}</span>: {msg.text}
+              <div key={i} className="text-sm text-gray-700 clearfix">
+                <span className="font-bold">{message.nickname}</span>:{" "}
+                {message.text}
+                {timestampEl}
               </div>
             );
-          } else if (msg.type === "server") {
+          } else if (message.type === "server") {
             return (
-              <div key={i} className="text-sm text-gray-400">
-                <span className="font-bold">SERVER</span>: {msg.text}
+              <div key={i} className="text-sm text-gray-400 clearfix">
+                <span className="font-bold">SERVER</span>: {message.text}
+                {timestampEl}
               </div>
             );
-          } else if (msg.type === "leave") {
+          } else if (message.type === "leave") {
             return (
-              <div key={i} className="text-sm text-red-500">
-                <span className="font-bold">{msg.nickname}</span> left
+              <div key={i} className="text-sm text-red-500 clearfix">
+                <span className="font-bold">{message.nickname}</span> left
+                {timestampEl}
               </div>
             );
           }

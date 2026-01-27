@@ -5,22 +5,26 @@
 - [x] Client leave messages
 - [x] Nickname in message UX
 - [x] Fix segfault when last client disconnects
-- [ ] Message timestamps
-- [x] Startup message
-- [ ] Connected users list
-- [x] More compact chat area
-- [ ] Remaining characters in input field
 - [x] Chat history per server lifetime
+- [x] Startup message
+- [x] More compact chat area
+- [x] Message timestamps
+- [ ] Connected users list
+- [ ] Fix chatmessage text wrapping
+- [ ] Remaining characters in input field
 - [ ] Bishy emotes
 - [ ] Color names
 - [ ] Pending message state UX
+- [ ] Typing indicator
+- [ ] Use binary communication instead of plaintext
+- [ ] Dark theme
 
 ## Protocol
-| Direction           | Opcode | Description          | Data Format                                 |
-|---------------------|--------|----------------------|---------------------------------------------|
-| **Client → Server** |   0    | Client join          | nickname                                    |
-|                     |   1    | Chat                 | message                                     |
-| **Server → Client** |   0    | Client join          | nickname `[20 chars]`                       |
-|                     |   1    | Chat                 | nickname `[20 chars]`, message `[80 chars]` |
-|                     |   2    | Server announcement  | message `[80 chars]`                        |
-|                     |   3    | Client leave         | nickname `[20 chars]`                       |
+| Direction           | Opcode | Description          | Data Format                                         |
+|---------------------|--------|----------------------|-----------------------------------------------------|
+| **Client → Server** |   0    | Client join          | nickname                                            |
+|                     |   1    | Chat                 | message                                             |
+| **Server → Client** |   0    | Client join          | timestamp `[10B]`, nickname `[20B]`                  |
+|                     |   1    | Chat                 | timestamp `[10B]`, nickname `[20B]`, message `[80B]` |
+|                     |   2    | Server announcement  | timestamp `[10B]`, message `[80B]`                   |
+|                     |   3    | Client leave         | timestamp `[10B]`, nickname `[20B]`                  |
