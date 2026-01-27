@@ -5,7 +5,7 @@ constexpr size_t NICKNAME_MAX_LEN = 20;
 constexpr size_t MESSAGE_MAX_LEN = 80;
 
 struct ClientData {
-    int clientId;
+    // int clientId;
     std::string nickname;
 };
 
@@ -37,17 +37,16 @@ class Packet {
 int main() {
     std::vector<uWS::WebSocket<false, true, ClientData>*> clients;
 
-    int clientIndex = 1;
+    // int clientIndex = 1;
 
     uWS::App()
     .ws<ClientData>("/*", {
-        .open = [&clients, &clientIndex](auto *ws) {
-            std::cout << "Client connected\n";
-            ws->getUserData()->clientId = clientIndex++;
+        .open = [&clients/*, &clientIndex*/](auto *ws) {
+            std::cout << "Client connected" << std::endl;
+            // ws->getUserData()->clientId = clientIndex++;
             clients.push_back(ws);
         },
         .message = [&clients](auto *ws, std::string_view raw_message, uWS::OpCode opCode) {
-            int senderId = ws->getUserData()->clientId;
 
             std::string message(raw_message);
             int op = message.at(0) - '0';
@@ -68,12 +67,11 @@ int main() {
             }
         },
         .close = [&clients](auto *ws, int /*code*/, std::string_view /*msg*/) {
-            std::cout << "Client left\n";
-            int clientId = ws->getUserData()->clientId;
-            std::string broadcastMessage = "[SERVER]: Client " + std::to_string(clientId) + " left";
-            for (auto *c : clients) {
-                c->send(broadcastMessage, uWS::OpCode::TEXT);
-            }
+            std::cout << "Client left: " << ws->getUserData()->nickname << std::endl;
+            Packet packet;
+            packet.write(1, "3");
+            packet.write(NICKNAME_MAX_LEN, ws->getUserData()->nickname);
+            for (auto *c : clients) c->send(packet.str(), uWS::OpCode::TEXT);
         }
     })    
     .listen(3000, [](auto *listen_socket) {

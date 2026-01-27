@@ -7,10 +7,16 @@ const host = window.location.href.startsWith("http://localhost")
   : "134.209.161.181";
 const WS_URL = `ws://${host}:3000`;
 
+interface ChatMessage {
+  type: "join" | "leave" | "chat" | "server";
+  nickname: string;
+  text?: string;
+}
+
 function App() {
   const [nickname, setNickname] = useState("");
   const [connected, setConnected] = useState(false);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const wsRef = useRef<WebSocket | null>(null);
 
@@ -23,8 +29,25 @@ function App() {
       setConnected(true);
       ws.send(`0${name}`);
     };
-    ws.onmessage = (e) =>
-      typeof e.data === "string" && setMessages((m) => [...m, e.data]);
+    ws.onmessage = (e) => {
+      const opcode = e.data[0];
+      const data = e.data.slice(1);
+
+      if (opcode === "0") {
+        const nickname = data.slice(0, 20).trim();
+        setMessages((m) => [...m, { type: "join", nickname }]);
+      } else if (opcode === "1") {
+        const nickname = data.slice(0, 20).trim();
+        const text = data.slice(20, 100).trim();
+        setMessages((m) => [...m, { type: "chat", nickname, text }]);
+      } else if (opcode === "2") {
+        const text = data.slice(0, 100).trim();
+        setMessages((m) => [...m, { type: "chat", nickname: "SERVER", text }]);
+      } else if (opcode === "3") {
+        const nickname = data.slice(0, 20).trim();
+        setMessages((m) => [...m, { type: "leave", nickname }]);
+      }
+    };
     wsRef.current = ws;
   };
 
@@ -63,14 +86,33 @@ function App() {
   return (
     <div className="flex min-h-svh flex-col p-4">
       <div className="flex-1 space-y-2 overflow-y-auto">
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`text-sm${msg.startsWith("[SERVER]") ? " text-gray-500" : ""}`}
-          >
-            {msg}
-          </div>
-        ))}
+        {messages.map((msg, i) => {
+          if (msg.type === "join") {
+            return (
+              <div key={i} className="text-sm text-green-500">
+                <span className="font-bold">{msg.nickname}</span> joined
+              </div>
+            );
+          } else if (msg.type === "chat") {
+            return (
+              <div key={i} className="text-sm text-gray-700">
+                <span className="font-bold">{msg.nickname}</span>: {msg.text}
+              </div>
+            );
+          } else if (msg.type === "server") {
+            return (
+              <div key={i} className="text-sm text-red-500">
+                <span className="font-bold">SERVER</span>: {msg.text}
+              </div>
+            );
+          } else if (msg.type === "leave") {
+            return (
+              <div key={i} className="text-sm text-red-500">
+                <span className="font-bold">{msg.nickname}</span> left
+              </div>
+            );
+          }
+        })}
       </div>
       <form onSubmit={send} className="mt-4 flex gap-2">
         <Input
