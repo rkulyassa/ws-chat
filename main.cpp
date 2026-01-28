@@ -52,7 +52,7 @@ int main() {
     std::vector<uWS::WebSocket<false, true, ClientData>*> clients;
     std::vector<ChatMessage> history;
 
-    history.push_back(buildServerMessage("Welcome to ws-chat! (Bishop chat 🐈‍⬛)."));
+    history.push_back(buildServerMessage("Welcome to ws-chat! (Bishop chat 🐈‍⬛)"));
     history.push_back(buildServerMessage("View the source at https://github.com/rkulyassa/ws-chat"));
 
     uWS::App()
