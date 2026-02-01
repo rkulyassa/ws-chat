@@ -11,11 +11,13 @@
 - [x] Message timestamps
 - [x] Connected users list
 - [x] UI Icons
+- [x] Fix chat scroll overflow
+- [ ] Make user list full height of app area
 - [ ] Error toast for server not running
-- [ ] Fix chatmessage text wrapping
+- [ ] Fix chatmessage text wrapping (?)
 - [ ] Remaining characters in input field
+- [ ] Uptime
 - [ ] Bishy emotes
-- [ ] Color names
 - [ ] Pending message state UX
 - [ ] Typing indicator
 - [ ] Use binary communication instead of plaintext

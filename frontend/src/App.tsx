@@ -25,7 +25,15 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [users, setUsers] = useState<string[]>([]);
   const [input, setInput] = useState("");
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
 
   const connect = () => {
     const name = nickname.trim();
@@ -42,6 +50,8 @@ function App() {
       const timestamp = new Date(0);
       timestamp.setUTCSeconds(+e.data.slice(1, 11));
       const data = e.data.slice(11);
+
+      // scroll messages div to bottom
 
       if (opcode === "0") {
         const nickname = data.slice(0, 20).trim();
@@ -99,9 +109,12 @@ function App() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col py-40 px-64">
-      <div className="flex flex-1">
-        <div className="flex-1 overflow-y-auto bg-white rounded-md p-4 border border-gray-200 shadow-xs">
+    <div className="h-svh flex flex-col py-40 px-64">
+      <div className="flex flex-1 overflow-y-auto">
+        <div
+          className="flex-1 overflow-y-auto bg-white rounded-md p-4 border border-gray-200 shadow-xs"
+          ref={messagesContainerRef}
+        >
           {messages.map((message, i) => {
             const timestampEl = (
               <span className="text-xs text-gray-300 float-right font-mono">
