@@ -12,7 +12,7 @@
 - [x] Connected users list
 - [x] UI Icons
 - [x] Fix chat scroll overflow
-- [ ] Make user list full height of app area
+- [x] Make user list full height of app area
 - [ ] Error toast for server not running
 - [ ] Fix chatmessage text wrapping (?)
 - [ ] Remaining characters in input field

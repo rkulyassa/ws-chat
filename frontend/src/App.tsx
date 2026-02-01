@@ -51,8 +51,6 @@ function App() {
       timestamp.setUTCSeconds(+e.data.slice(1, 11));
       const data = e.data.slice(11);
 
-      // scroll messages div to bottom
-
       if (opcode === "0") {
         const nickname = data.slice(0, 20).trim();
         setMessages((m) => [...m, { type: "join", timestamp, nickname }]);
@@ -109,8 +107,8 @@ function App() {
   }
 
   return (
-    <div className="h-svh flex flex-col py-40 px-64">
-      <div className="flex flex-1 overflow-y-auto">
+    <div className="h-svh flex flex-row py-40 px-64">
+      <div className="flex flex-col flex-1">
         <div
           className="flex-1 overflow-y-auto bg-white rounded-md p-4 border border-gray-200 shadow-xs"
           ref={messagesContainerRef}
@@ -183,12 +181,29 @@ function App() {
             }
           })}
         </div>
-        <div className="w-48 bg-gray-50 rounded-md p-4 border border-gray-200 ml-4 flex flex-col shadow-xs">
-          <div className="flex items-center gap-1 mb-1">
-            <UsersIcon color="#6a7282" size={16} strokeWidth={2.5} />
-            <span className="text-sm text-gray-500">Users</span>
-          </div>
-          <Separator className="mb-1" />
+        <form
+          onSubmit={send}
+          className="flex gap-2 mt-2"
+          style={{ maxWidth: "none" }}
+        >
+          <Input
+            placeholder="Message"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <Button type="submit">
+            Send
+            <SendIcon />
+          </Button>
+        </form>
+      </div>
+      <div className="w-48 bg-gray-50 rounded-md p-4 border border-gray-200 ml-2 flex flex-col shadow-xs">
+        <div className="flex items-center gap-1 mb-1">
+          <UsersIcon color="#6a7282" size={16} strokeWidth={2.5} />
+          <span className="text-sm text-gray-500">Users</span>
+        </div>
+        <Separator className="mb-1" />
+        <div className="flex-1 overflow-y-auto">
           {users.map((user, i) => (
             <div key={i} className="text-sm text-gray-500 pl-0.5">
               {user}
@@ -196,23 +211,7 @@ function App() {
           ))}
         </div>
       </div>
-      <form
-        onSubmit={send}
-        className="flex gap-2 mt-4"
-        style={{ maxWidth: "none" }}
-      >
-        <Input
-          placeholder="Message"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <Button type="submit">
-          Send
-          <SendIcon />
-        </Button>
-      </form>
     </div>
-    // </div>
   );
 }
 
