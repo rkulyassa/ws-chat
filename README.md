@@ -15,7 +15,7 @@
 - [x] Make user list full height of app area
 - [ ] Error toast for server not running
 - [ ] Fix chatmessage text wrapping (?)
-- [ ] Remaining characters in input field
+- [x] Remaining characters in input field
 - [ ] Uptime
 - [ ] Bishy emotes
 - [ ] Pending message state UX

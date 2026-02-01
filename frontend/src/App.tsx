@@ -31,7 +31,11 @@ function App() {
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (container) {
+      const originalOverflow = container.style.overflow;
+      container.style.overflow = "hidden";
       container.scrollTop = container.scrollHeight;
+      console.log(originalOverflow);
+      container.style.overflow = originalOverflow;
     }
   }, [messages]);
 
@@ -94,12 +98,19 @@ function App() {
           }}
           className="flex w-full max-w-sm gap-2"
         >
-          <Input
-            placeholder="Username"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            autoFocus
-          />
+          <div className="relative w-full">
+            <Input
+              placeholder="Username"
+              value={nickname}
+              maxLength={20}
+              onChange={(e) => setNickname(e.target.value)}
+              autoFocus
+              className="placeholder:text-gray-400"
+            />
+            <span className="absolute inset-y-0 right-2 flex items-center text-xs text-gray-400 pointer-events-none select-none">
+              {nickname.length}/20
+            </span>
+          </div>
           <Button type="submit">Connect</Button>
         </form>
       </div>
@@ -186,11 +197,18 @@ function App() {
           className="flex gap-2 mt-2"
           style={{ maxWidth: "none" }}
         >
-          <Input
-            placeholder="Message"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
+          <div className="relative w-full">
+            <Input
+              placeholder="Message"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="placeholder:text-gray-400"
+              maxLength={80}
+            />
+            <span className="absolute inset-y-0 right-2 flex items-center text-xs text-gray-400 pointer-events-none select-none">
+              {input.length}/80
+            </span>
+          </div>
           <Button type="submit">
             Send
             <SendIcon />
